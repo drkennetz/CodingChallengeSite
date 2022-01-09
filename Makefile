@@ -21,4 +21,7 @@ loaddata:
 generate:
 	docker run --rm -v $(makeFileDir):/src -w /src kjconroy/sqlc generate
 
-.PHONY: postgres createdb dropdb migrateup migratedown loaddata generate
+test:
+	go test -v -cover ./...
+	
+.PHONY: postgres createdb dropdb migrateup migratedown loaddata generate test
