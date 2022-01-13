@@ -36,6 +36,11 @@ func RandomFullName() string {
 	return RandomString(6) + " " + RandomString(5)
 }
 
+// RandomUsername generates a random username
+func RandomUsername() string {
+	return RandomString(8)
+}
+
 // RandomEmail generates a random email
 func RandomEmail() string {
 	randEmail := RandomString(8)+"@"+RandomString(4)+".com"
@@ -49,4 +54,9 @@ func RandomEmail() string {
 func IsValidEmail(email string) bool {
 	_, err := mail.ParseAddress(email)
 	return err == nil
+}
+
+func RandomGrade() string {
+	levels := []string{"new", "junior", "midlevel", "senior"}
+	return levels[rand.Intn(len(levels))]
 }

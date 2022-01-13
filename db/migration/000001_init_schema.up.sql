@@ -1,6 +1,6 @@
 CREATE TYPE "dev_level" AS ENUM (
   'new',
-  'beginner',
+  'junior',
   'midlevel',
   'senior'
 );

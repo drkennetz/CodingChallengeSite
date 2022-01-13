@@ -11,7 +11,7 @@ type DevLevel string
 
 const (
 	DevLevelNew      DevLevel = "new"
-	DevLevelBeginner DevLevel = "beginner"
+	DevLevelJunior   DevLevel = "junior"
 	DevLevelMidlevel DevLevel = "midlevel"
 	DevLevelSenior   DevLevel = "senior"
 )
