@@ -37,3 +37,6 @@ func (store *Store) execTx(ctx context.Context, fn func(*Queries) error) error {
 
 	return tx.Commit()
 }
+
+// question + question_category creation should be done in a transaction
+// account + user creation should be done in a transaction

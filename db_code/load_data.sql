@@ -6,3 +6,6 @@ insert into public.users (account_id, username, grade) values(1, 'drkennetz', 's
 insert into public.categories (category) values('arrays');
 insert into public.categories (category) values('strings');
 insert into public.categories (category) values('hashmaps');
+
+-- we definitely want question_test_cases to be added as a table as well
+-- id, question_id (one to many, FK), input, output

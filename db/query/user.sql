@@ -1,10 +1,11 @@
 -- name: CreateUser :one
 INSERT INTO users (
     account_id,
+    admin_user,
     username,
     grade
 ) VALUES (
-  $1, $2, $3  
+  $1, $2, $3, $4  
 )  RETURNING *;
 
 -- name: GetAUser :one
@@ -20,6 +21,12 @@ OFFSET $2;
 -- name: UpdateUsername :one
 UPDATE users
 SET username = $2
+where id = $1
+RETURNING *;
+
+-- name: UpdateAdminStatus :one
+UPDATE users
+SET admin_user = $2
 where id = $1
 RETURNING *;
 

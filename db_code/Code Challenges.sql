@@ -17,6 +17,7 @@ CREATE TABLE "accounts" (
 CREATE TABLE "users" (
   "id" bigserial PRIMARY KEY,
   "account_id" bigint NOT NULL,
+  "admin_user" boolean NOT NULL DEFAULT false,
   "username" varchar NOT NULL,
   "grade" dev_level NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
