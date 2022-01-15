@@ -1,5 +1,5 @@
 CREATE TYPE "dev_level" AS ENUM (
-  'new',
+  'beginner',
   'junior',
   'midlevel',
   'senior'
@@ -48,6 +48,13 @@ CREATE TABLE "question_categories" (
   "category_id" bigint NOT NULL
 );
 
+CREATE TABLE "question_test_cases" (
+  "id" bigserial PRIMARY KEY,
+  "question_id" bigint NOT NULL,
+  "inputs" json NOT NULL,
+  "outputs" json NOT NULL
+);
+
 CREATE TABLE "user_question_score" (
   "id" bigserial PRIMARY KEY,
   "user_id" bigint NOT NULL,
@@ -63,6 +70,8 @@ ALTER TABLE "question_categories" ADD FOREIGN KEY ("question_id") REFERENCES "qu
 
 ALTER TABLE "question_categories" ADD FOREIGN KEY ("category_id") REFERENCES "categories" ("id");
 
+ALTER TABLE "question_test_cases" ADD FOREIGN KEY ("question_id") REFERENCES "questions" ("id");
+
 ALTER TABLE "user_question_score" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
 ALTER TABLE "user_question_score" ADD FOREIGN KEY ("question_id") REFERENCES "questions" ("id");
@@ -76,6 +85,8 @@ CREATE INDEX ON "users" ("username");
 CREATE INDEX ON "users" ("grade");
 
 CREATE INDEX ON "question_categories" ("category_id");
+
+CREATE INDEX ON "question_test_cases" ("question_id");
 
 CREATE INDEX ON "user_question_score" ("user_id");
 
