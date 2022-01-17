@@ -57,6 +57,6 @@ func IsValidEmail(email string) bool {
 }
 
 func RandomGrade() string {
-	levels := []string{"new", "junior", "midlevel", "senior"}
+	levels := []string{"beginner", "junior", "midlevel", "senior"}
 	return levels[rand.Intn(len(levels))]
 }

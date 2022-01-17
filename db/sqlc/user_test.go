@@ -24,6 +24,7 @@ func createRandomUser(t *testing.T) User {
 	arg2 := CreateUserParams {
 		AccountID: account.ID,
 		Username: util.RandomUsername(),
+		Password: util.RandomString(8),
 		Grade: DevLevel(util.RandomGrade()), 
 	}
 
@@ -32,6 +33,7 @@ func createRandomUser(t *testing.T) User {
 	require.NotEmpty(t, user)
 	require.Equal(t, arg2.AccountID, user.AccountID)
 	require.Equal(t, arg2.Username, user.Username)
+	require.Equal(t, arg2.Password, user.Password)
 	require.Equal(t, arg2.Grade, user.Grade)
 
 	return user
@@ -56,11 +58,11 @@ func TestGetUser(t *testing.T) {
 func TestDeleteUser(t *testing.T) {
 	user1 := createRandomUser(t)
 
-	err := testQueries.DeleteAccount(context.Background(), user1.ID)
+	err := testQueries.DeleteUser(context.Background(), user1.ID)
 	require.NoError(t, err)
-
-	user2, err := testQueries.GetAccount(context.Background(), user1.ID)
-	require.Error(t, err)
+	err = testQueries.DeleteAccount(context.Background(), user1.AccountID)
+	require.NoError(t, err)
+	user2, err := testQueries.GetAUser(context.Background(), user1.ID)
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, user2)
 }
@@ -96,6 +98,18 @@ func TestUpdateUserGrade(t *testing.T) {
 	require.True(t, user2.Grade == DevLevelMidlevel)
 }
 
+func TestUpdateAdminStatus(t *testing.T) {
+	user1 := createRandomUser(t)
+	arg := UpdateAdminStatusParams {
+		ID: user1.ID,
+		AdminUser: true,
+	}
+	user2, err := testQueries.UpdateAdminStatus(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, user2)
+	require.True(t, user2.AdminUser)
+}
+
 func TestUpdateUsername(t *testing.T) {
 	user1 := createRandomUser(t)
 	arg := UpdateUsernameParams {
@@ -106,4 +120,16 @@ func TestUpdateUsername(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
 	require.True(t, user2.Username == "Testing This")
+}
+
+func TestUpdatePassword(t *testing.T) {
+	user1 := createRandomUser(t)
+	arg := UpdatePasswordParams {
+		Username: user1.Username,
+		Password: "TestPsswd",
+	}
+	user2, err := testQueries.UpdatePassword(context.Background(), arg)
+	require.NoError(t, err)
+	require.True(t, user2.Password == "TestPsswd")
+
 }

@@ -19,6 +19,7 @@ CREATE TABLE "users" (
   "account_id" bigint NOT NULL,
   "admin_user" boolean NOT NULL DEFAULT false,
   "username" varchar NOT NULL,
+  "password" varchar NOT NULL,
   "grade" dev_level NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz NOT NULL DEFAULT (now())

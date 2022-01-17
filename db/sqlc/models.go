@@ -3,6 +3,7 @@
 package db
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 )
@@ -10,7 +11,7 @@ import (
 type DevLevel string
 
 const (
-	DevLevelNew      DevLevel = "new"
+	DevLevelBeginner DevLevel = "beginner"
 	DevLevelJunior   DevLevel = "junior"
 	DevLevelMidlevel DevLevel = "midlevel"
 	DevLevelSenior   DevLevel = "senior"
@@ -61,10 +62,19 @@ type QuestionCategory struct {
 	CategoryID int64 `json:"category_id"`
 }
 
+type QuestionTestCase struct {
+	ID         int64           `json:"id"`
+	QuestionID int64           `json:"question_id"`
+	Inputs     json.RawMessage `json:"inputs"`
+	Outputs    json.RawMessage `json:"outputs"`
+}
+
 type User struct {
 	ID        int64     `json:"id"`
 	AccountID int64     `json:"account_id"`
+	AdminUser bool      `json:"admin_user"`
 	Username  string    `json:"username"`
+	Password  string    `json:"password"`
 	Grade     DevLevel  `json:"grade"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

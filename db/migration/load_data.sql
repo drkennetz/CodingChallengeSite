@@ -1,6 +1,6 @@
 -- insert me as a user
 insert into public.accounts (full_name, email, opted_in) values('Dennis Kennetz', 'drkennetz@gmail.com', true);
-insert into public.users (account_id, admin_user, username, grade) values(1, true, 'drkennetz', 'senior');
+insert into public.users (account_id, admin_user, username, password, grade) values(1, true, 'drkennetz', 'password', 'senior');
 
 -- add public.categories 
 insert into public.categories (category) values('math');
