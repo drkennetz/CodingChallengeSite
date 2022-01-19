@@ -64,6 +64,9 @@ type CreateAccountUserTxResult struct {
 	User    User
 }
 
+// we are creating an empty object of type struct to pass into our context
+var txKey = struct{}{}
+
 func (store *Store) CreateAccountUserTx(ctx context.Context, arg CreateAccountUserTxParams) (CreateAccountUserTxResult, error) {
 	var result CreateAccountUserTxResult
 
@@ -72,6 +75,9 @@ func (store *Store) CreateAccountUserTx(ctx context.Context, arg CreateAccountUs
 	// this is because callback function itself doesn't know the exact type of the result
 	err := store.execTx(ctx, func(q *Queries) error {
 		var err error
+		txName := ctx.Value(txKey)
+
+		fmt.Println(txName, "create account")
 		result.Account, err = q.CreateAccount(ctx, CreateAccountParams{
 			FullName: arg.FullName,
 			Email: arg.Email,
@@ -81,12 +87,17 @@ func (store *Store) CreateAccountUserTx(ctx context.Context, arg CreateAccountUs
 			return err
 		}
 
-		// might have to try to prevent deadlock here since using a value generated
-		// by db in step above. If DB takes longer to generate the account ID than
-		// it does for code to get here (which is possible), we could run into
-		// race conditions
+		// to ensure deadlock prevention (IE we are not accessing the user before it is created)
+		// we can query the database for the account. This ensures the account exists in the database prior to 
+		// creating a user from that account:
+		fmt.Println(txName, "make sure account exists in db by retrieving it and locking it until user is created")
+		resultAcc, err := q.GetAccountForUpdate(ctx, result.Account.ID)
+		if err != nil {
+			return err
+		}
+		fmt.Println(txName, "create user")
 		result.User, err = q.CreateUser(ctx, CreateUserParams{
-			AccountID: result.Account.ID,
+			AccountID: resultAcc.ID,
 			AdminUser: arg.AdminUser,
 			Username: arg.Username,
 			Password: arg.Password,

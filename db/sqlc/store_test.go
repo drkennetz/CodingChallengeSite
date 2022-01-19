@@ -16,12 +16,14 @@ func TestCreateAccountUserTx(t *testing.T) {
 	// best way to test transactions well is to run them with several concurrent
 	// goroutines. We will test with 5 concurrent transactions
 
-	n := 5
+	n := 2
 
 	errs := make(chan error)
 	results := make(chan CreateAccountUserTxResult)
 
 	for i := 0; i < n; i++ {
+		// deadlock debugging (I do not have a deadlock, but I want to add this safety)
+		txName := fmt.Sprintf("tx %d", i+1)
 		arg := CreateAccountUserTxParams {
 			FullName: fmt.Sprintf("Test User%v", i),
 			Email: fmt.Sprintf("Test%vUser@Test.com", i),
@@ -32,7 +34,9 @@ func TestCreateAccountUserTx(t *testing.T) {
 			Grade: DevLevelBeginner,
 		}
 		go func() {
-			result, err := store.CreateAccountUserTx(context.Background(), arg)
+			// This will allow the context to hold the transaction name
+			ctx := context.WithValue(context.Background(), txKey, txName)
+			result, err := store.CreateAccountUserTx(ctx, arg)
 			errs <- err
 			results <- result
 		}()
