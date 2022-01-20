@@ -91,7 +91,7 @@ func (store *Store) CreateAccountUserTx(ctx context.Context, arg CreateAccountUs
 		// we can query the database for the account. This ensures the account exists in the database prior to 
 		// creating a user from that account:
 		fmt.Println(txName, "make sure account exists in db by retrieving it and locking it until user is created")
-		resultAcc, err := q.GetAccountForUpdate(ctx, result.Account.ID)
+		resultAcc, err := q.GetAccount(ctx, result.Account.ID)
 		if err != nil {
 			return err
 		}
