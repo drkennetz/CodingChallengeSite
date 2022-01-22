@@ -5,13 +5,9 @@ import (
 	"log"
 	"os"
 	"testing"
-	_ "github.com/lib/pq"
-)
 
-const (
-	// should source these from environment in future
-	dbDriver = "postgres"
-	dbSource = "postgresql://root:harrison40@localhost:5432/coding_challenge?sslmode=disable"
+	"github.com/drkennetz/codingchallenge/util"
+	_ "github.com/lib/pq"
 )
 
 var testQueries *Queries
@@ -20,8 +16,11 @@ var testDB *sql.DB
 
 func TestMain(m *testing.M) {
 	// main entry point of all tests of a specific golang package
-	var err error
-	testDB, err = sql.Open(dbDriver, dbSource)
+	config, err := util.LoadConfig("../..")
+	if err != nil {
+		log.Fatal("failed to load config.", err)
+	}
+	testDB, err = sql.Open(config.DBDriver, config.DBSource)
 	if err != nil {
 		log.Fatal("cannot connect to database")
 	}
