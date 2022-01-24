@@ -7,22 +7,28 @@ import (
 )
 
 // Store provides all functions to execute db queries and transactions
+type Store interface {
+	Querier
+	CreateAccountUserTx(ctx context.Context, arg CreateAccountUserTxParams) (CreateAccountUserTxResult, error)
+}
+
+// SQLStore provides all functions to execute SQL db queries and transactions
 // extending the functionality of queries since one query only handles one operation
-type Store struct {
+type SQLStore struct {
 	*Queries // composition - all Queries will be available to Store
 	db *sql.DB
 }
 
 // NewStore builds a new Store object and returns it
-func NewStore(db *sql.DB) *Store {
-	return &Store{
+func NewStore(db *sql.DB) Store {
+	return &SQLStore{
 		db: db,
 		Queries: New(db),
 	}
 }
 
 // execTx executes a function within a database transaction
-func (store *Store) execTx(ctx context.Context, fn func(*Queries) error) error {
+func (store *SQLStore) execTx(ctx context.Context, fn func(*Queries) error) error {
 	tx, err := store.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -67,7 +73,7 @@ type CreateAccountUserTxResult struct {
 // we are creating an empty object of type struct to pass into our context
 var txKey = struct{}{}
 
-func (store *Store) CreateAccountUserTx(ctx context.Context, arg CreateAccountUserTxParams) (CreateAccountUserTxResult, error) {
+func (store *SQLStore) CreateAccountUserTx(ctx context.Context, arg CreateAccountUserTxParams) (CreateAccountUserTxResult, error) {
 	var result CreateAccountUserTxResult
 
 	// we are accessing the result variable from inside the tx function. similar to the arg variable. This makes the callback fn a closure
