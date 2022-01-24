@@ -104,6 +104,58 @@ func TestGetAccountAPI(t *testing.T) {
 	
 	
 }
+func TestCreateAccountAPI(t *testing.T) {
+	var account db.Account
+	args := db.CreateAccountParams {
+		FullName: util.RandomFullName(),
+		Email: util.RandomEmail(),
+		OptedIn: false,
+	}
+	account.FullName = args.FullName
+	account.Email = args.Email
+	account.OptedIn = args.OptedIn
+	testCases := []struct{
+		name string
+		buildStubs func(store *mockdb.MockStore)
+		checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder)
+	}{
+		{
+			name: "OK",
+			buildStubs: func(store *mockdb.MockStore) {
+				// build stubs
+				// the stubs should match those given in the querier interface
+				// We want this to run 1 time, and return our account and nil (because CreateAccount returns an account and error)
+				store.EXPECT().CreateAccount(gomock.Any(), gomock.Eq(args)).Times(1).Return(account, nil)
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusOK, recorder.Code)
+				requireBodyMatchAccount(t, recorder.Body, account)
+			},
+		},
+	}
+	for i := range testCases {
+		tc := testCases[i]
+		t.Run(tc.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			store := mockdb.NewMockStore(ctrl)
+			tc.buildStubs(store)
+			// start test server and send CreateAccount request
+			server := NewServer(store)
+			recorder := httptest.NewRecorder()
+
+			url := "/accounts"
+			req, err := http.NewRequest(http.MethodPost, url, nil)
+			require.NoError(t, err)
+
+			// this will send our api request through the server router and record its response in the recorder
+			server.router.ServeHTTP(recorder, req)
+			tc.checkResponse(t, recorder)
+		})
+	}
+		
+}
 
 func randomAccount() db.Account {
 	return db.Account{
