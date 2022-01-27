@@ -21,6 +21,6 @@ SET category = $2
 where id = $1
 RETURNING *;
 
--- name: DeleteCategory :one
+-- name: DeleteCategory :exec
 DELETE from categories
 where id = $1;

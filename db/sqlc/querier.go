@@ -8,17 +8,23 @@ import (
 
 type Querier interface {
 	CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error)
+	CreateCategory(ctx context.Context, category string) (Category, error)
+	CreateQuestionCategory(ctx context.Context, arg CreateQuestionCategoryParams) (QuestionCategory, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteAccount(ctx context.Context, id int64) error
+	DeleteCategory(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
+	GetACategoryByID(ctx context.Context, id int64) (Category, error)
 	GetAUser(ctx context.Context, id int64) (User, error)
 	GetAccount(ctx context.Context, id int64) (Account, error)
 	ListAccounts(ctx context.Context, arg ListAccountsParams) ([]Account, error)
+	ListCategories(ctx context.Context, arg ListCategoriesParams) ([]Category, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error)
 	UpdateAccountEmail(ctx context.Context, arg UpdateAccountEmailParams) (Account, error)
 	UpdateAccountName(ctx context.Context, arg UpdateAccountNameParams) (Account, error)
 	UpdateAccountOptedIn(ctx context.Context, arg UpdateAccountOptedInParams) (Account, error)
 	UpdateAdminStatus(ctx context.Context, arg UpdateAdminStatusParams) (User, error)
+	UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (Category, error)
 	UpdatePassword(ctx context.Context, arg UpdatePasswordParams) (User, error)
 	UpdateUserGrade(ctx context.Context, arg UpdateUserGradeParams) (User, error)
 	UpdateUsername(ctx context.Context, arg UpdateUsernameParams) (User, error)
