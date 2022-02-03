@@ -3,6 +3,7 @@
 package db
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -29,6 +30,25 @@ func (e *DevLevel) Scan(src interface{}) error {
 	return nil
 }
 
+type QuestionType string
+
+const (
+	QuestionTypePractice QuestionType = "practice"
+	QuestionTypeTest     QuestionType = "test"
+)
+
+func (e *QuestionType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = QuestionType(s)
+	case string:
+		*e = QuestionType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for QuestionType: %T", src)
+	}
+	return nil
+}
+
 type Account struct {
 	ID        int64     `json:"id"`
 	FullName  string    `json:"full_name"`
@@ -45,15 +65,16 @@ type Category struct {
 }
 
 type Question struct {
-	ID             int64     `json:"id"`
-	ChallengeName  string    `json:"challenge_name"`
-	Description    string    `json:"description"`
-	Example        string    `json:"example"`
-	Difficulty     int32     `json:"difficulty"`
-	Complexity     string    `json:"complexity"`
-	CompletionTime int32     `json:"completion_time"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
+	ID             int64        `json:"id"`
+	ChallengeName  string       `json:"challenge_name"`
+	Description    string       `json:"description"`
+	Example        string       `json:"example"`
+	Difficulty     int32        `json:"difficulty"`
+	Complexity     string       `json:"complexity"`
+	CompletionTime int32        `json:"completion_time"`
+	QuestionType   QuestionType `json:"question_type"`
+	CreatedAt      time.Time    `json:"created_at"`
+	UpdatedAt      time.Time    `json:"updated_at"`
 }
 
 type QuestionCategory struct {
@@ -81,10 +102,11 @@ type User struct {
 }
 
 type UserQuestionScore struct {
-	ID         int64     `json:"id"`
-	UserID     int64     `json:"user_id"`
-	QuestionID int64     `json:"question_id"`
-	Score      int32     `json:"score"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	ID           int64        `json:"id"`
+	UserID       int64        `json:"user_id"`
+	QuestionID   int64        `json:"question_id"`
+	Score        int32        `json:"score"`
+	IsMostRecent sql.NullBool `json:"is_most_recent"`
+	CreatedAt    time.Time    `json:"created_at"`
+	UpdatedAt    time.Time    `json:"updated_at"`
 }

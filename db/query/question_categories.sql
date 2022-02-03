@@ -6,3 +6,8 @@ INSERT INTO question_categories (
     $1, $2 
 ) RETURNING *;
 
+-- name: ListAllQuestionsByCategory :many
+SELECT * from questions
+where id in (
+    SELECT question_id from question_categories where category_id = $1
+) ORDER BY ASCENDING(difficulty);

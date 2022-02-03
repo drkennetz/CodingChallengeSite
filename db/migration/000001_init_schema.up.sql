@@ -5,6 +5,11 @@ CREATE TYPE "dev_level" AS ENUM (
   'senior'
 );
 
+CREATE TYPE "question_type" AS ENUM (
+  'practice',
+  'test'
+);
+
 CREATE TABLE "accounts" (
   "id" bigserial PRIMARY KEY,
   "full_name" varchar NOT NULL,
@@ -39,6 +44,7 @@ CREATE TABLE "questions" (
   "difficulty" int4 NOT NULL,
   "complexity" text NOT NULL,
   "completion_time" int4 NOT NULL,
+  "question_type" question_type NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz NOT NULL DEFAULT (now())
 );
@@ -56,11 +62,14 @@ CREATE TABLE "question_test_cases" (
   "outputs" json NOT NULL
 );
 
+-- is most recent needs changed to trigger true for latest question/score
+-- and false for rest
 CREATE TABLE "user_question_score" (
   "id" bigserial PRIMARY KEY,
   "user_id" bigint NOT NULL,
   "question_id" bigint NOT NULL,
   "score" int4 NOT NULL,
+  "is_most_recent" boolean,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "updated_at" timestamptz NOT NULL DEFAULT (now())
 );
@@ -68,8 +77,6 @@ CREATE TABLE "user_question_score" (
 ALTER TABLE "users" ADD FOREIGN KEY ("account_id") REFERENCES "accounts" ("id");
 
 ALTER TABLE "question_categories" ADD FOREIGN KEY ("question_id") REFERENCES "questions" ("id");
-
-ALTER TABLE "question_categories" ADD FOREIGN KEY ("category_id") REFERENCES "categories" ("id");
 
 ALTER TABLE "question_test_cases" ADD FOREIGN KEY ("question_id") REFERENCES "questions" ("id");
 

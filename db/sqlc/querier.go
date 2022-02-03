@@ -9,16 +9,27 @@ import (
 type Querier interface {
 	CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error)
 	CreateCategory(ctx context.Context, category string) (Category, error)
+	CreateQuestion(ctx context.Context, arg CreateQuestionParams) (Question, error)
 	CreateQuestionCategory(ctx context.Context, arg CreateQuestionCategoryParams) (QuestionCategory, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	CreateUserQuestionScore(ctx context.Context, arg CreateUserQuestionScoreParams) (UserQuestionScore, error)
 	DeleteAccount(ctx context.Context, id int64) error
 	DeleteCategory(ctx context.Context, id int64) error
+	DeleteQuestion(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
+	DeleteUserQuestionScore(ctx context.Context, id int64) error
 	GetACategoryByID(ctx context.Context, id int64) (Category, error)
 	GetAUser(ctx context.Context, id int64) (User, error)
 	GetAccount(ctx context.Context, id int64) (Account, error)
+	GetLastUserQuestionScore(ctx context.Context, arg GetLastUserQuestionScoreParams) (UserQuestionScore, error)
+	GetQuestion(ctx context.Context, id int64) (Question, error)
 	ListAccounts(ctx context.Context, arg ListAccountsParams) ([]Account, error)
+	ListAllQuestions(ctx context.Context, arg ListAllQuestionsParams) ([]Question, error)
+	ListAllQuestionsByCategory(ctx context.Context, categoryID int64) ([]Question, error)
+	ListAllQuestionsByDifficulty(ctx context.Context, arg ListAllQuestionsByDifficultyParams) ([]Question, error)
 	ListCategories(ctx context.Context, arg ListCategoriesParams) ([]Category, error)
+	ListLastScoresByQuestion(ctx context.Context, arg ListLastScoresByQuestionParams) ([]UserQuestionScore, error)
+	ListQuestionScoresByUser(ctx context.Context, arg ListQuestionScoresByUserParams) ([]UserQuestionScore, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error)
 	UpdateAccountEmail(ctx context.Context, arg UpdateAccountEmailParams) (Account, error)
 	UpdateAccountName(ctx context.Context, arg UpdateAccountNameParams) (Account, error)
@@ -26,7 +37,9 @@ type Querier interface {
 	UpdateAdminStatus(ctx context.Context, arg UpdateAdminStatusParams) (User, error)
 	UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (Category, error)
 	UpdatePassword(ctx context.Context, arg UpdatePasswordParams) (User, error)
+	UpdateQuestion(ctx context.Context, arg UpdateQuestionParams) (Question, error)
 	UpdateUserGrade(ctx context.Context, arg UpdateUserGradeParams) (User, error)
+	UpdateUserQuestionScore(ctx context.Context, arg UpdateUserQuestionScoreParams) (UserQuestionScore, error)
 	UpdateUsername(ctx context.Context, arg UpdateUsernameParams) (User, error)
 }
 

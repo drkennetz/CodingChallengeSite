@@ -73,6 +73,7 @@ type CreateAccountUserTxResult struct {
 // we are creating an empty object of type struct to pass into our context
 var txKey = struct{}{}
 
+// CreateAccountUserTx creates an account and a user in a transaction
 func (store *SQLStore) CreateAccountUserTx(ctx context.Context, arg CreateAccountUserTxParams) (CreateAccountUserTxResult, error) {
 	var result CreateAccountUserTxResult
 
@@ -117,6 +118,17 @@ func (store *SQLStore) CreateAccountUserTx(ctx context.Context, arg CreateAccoun
 
 	return result, err
 }
+
+// DeleteAccountUserTxParams stores all information needed to delete an account
+type DeleteAccountUserTxParams struct {
+	Email string `json:"email"`
+	Username string `json:"username"`
+}
+
+// DeleteAccountUserTx deletes an account and a user
+func (store *SQLStore) DeleteAccountUserTx(ctx context.Context, account_id, user_id int) error {
+	return nil
+}
 // question creation (requires category selection) -> question_category records
 
 // delete operations related to a question should be rolled into a transaction
@@ -126,3 +138,8 @@ func (store *SQLStore) CreateAccountUserTx(ctx context.Context, arg CreateAccoun
 // delete category ""
 
 // delete account ""
+
+// insert new user_question_score can set the old score to false
+// and then add the new one
+// update question score can set the current question is_most_recent to false
+// and then 
