@@ -4,12 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 )
 
 // Store provides all functions to execute db queries and transactions
 type Store interface {
 	Querier
 	CreateAccountUserTx(ctx context.Context, arg CreateAccountUserTxParams) (CreateAccountUserTxResult, error)
+	DeleteAccountUserTx(ctx context.Context, arg DeleteAccountUserTxParams) (error)
 }
 
 // SQLStore provides all functions to execute SQL db queries and transactions
@@ -125,9 +127,47 @@ type DeleteAccountUserTxParams struct {
 	Username string `json:"username"`
 }
 
-// DeleteAccountUserTx deletes an account and a user
-func (store *SQLStore) DeleteAccountUserTx(ctx context.Context, account_id, user_id int) error {
-	return nil
+// DeleteAccountUserTx updates users user_question_score to default accounts
+// and deletes account data given a username and password
+func (store *SQLStore) DeleteAccountUserTx(ctx context.Context, arg DeleteAccountUserTxParams) error {
+	
+	err := store.execTx(ctx, func(q *Queries) error {
+		var err error
+		txName := ctx.Value(txKey)
+		log.Println("Beginning transaction to delete account", txName)
+		account, err := q.GetAccountByEmail(ctx, arg.Email)
+		if err != nil {
+			return err
+		}
+		user, err := q.GetUserByUsername(ctx, arg.Username)
+		if err != nil {
+			return err
+		}
+		// This is where we will move data.
+		defaultUser, err := q.GetUserByUsername(ctx, string(user.Grade))
+		if err != nil {
+			return err
+		}
+		scores, err := q.UpdateUserUserQuestionScore(ctx, UpdateUserUserQuestionScoreParams{
+			UserID: user.ID,
+			UserID_2: defaultUser.ID,
+		})
+		if err != sql.ErrNoRows {
+			return err
+		}
+		log.Printf("Total scores updated: %v from %s to %s", len(scores), user.Username, defaultUser.Username)
+		err = q.DeleteUser(ctx, user.ID)
+		if err != nil {
+			return err
+		}
+		err = q.DeleteAccount(ctx, account.ID)
+		if err != nil {
+			return err
+		}
+		log.Println("Completed transaction to delete account", txName)
+		return nil
+	})
+	return err
 }
 // question creation (requires category selection) -> question_category records
 

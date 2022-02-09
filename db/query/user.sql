@@ -13,6 +13,10 @@ INSERT INTO users (
 SELECT * FROM users
 where id = $1 LIMIT 1;
 
+-- name: GetUserByUsername :one
+SELECT * from users
+where username = $1 LIMIT 1;
+
 -- name: ListUsers :many
 SELECT * from users
 ORDER BY id

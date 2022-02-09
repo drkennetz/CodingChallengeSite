@@ -255,6 +255,21 @@ func (mr *MockStoreMockRecorder) GetAccount(arg0, arg1 interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccount", reflect.TypeOf((*MockStore)(nil).GetAccount), arg0, arg1)
 }
 
+// GetAccountByEmail mocks base method.
+func (m *MockStore) GetAccountByEmail(arg0 context.Context, arg1 string) (db.Account, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAccountByEmail", arg0, arg1)
+	ret0, _ := ret[0].(db.Account)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAccountByEmail indicates an expected call of GetAccountByEmail.
+func (mr *MockStoreMockRecorder) GetAccountByEmail(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccountByEmail", reflect.TypeOf((*MockStore)(nil).GetAccountByEmail), arg0, arg1)
+}
+
 // GetLastUserQuestionScore mocks base method.
 func (m *MockStore) GetLastUserQuestionScore(arg0 context.Context, arg1 db.GetLastUserQuestionScoreParams) (db.UserQuestionScore, error) {
 	m.ctrl.T.Helper()
@@ -283,6 +298,21 @@ func (m *MockStore) GetQuestion(arg0 context.Context, arg1 int64) (db.Question, 
 func (mr *MockStoreMockRecorder) GetQuestion(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetQuestion", reflect.TypeOf((*MockStore)(nil).GetQuestion), arg0, arg1)
+}
+
+// GetUserByUsername mocks base method.
+func (m *MockStore) GetUserByUsername(arg0 context.Context, arg1 string) (db.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByUsername", arg0, arg1)
+	ret0, _ := ret[0].(db.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByUsername indicates an expected call of GetUserByUsername.
+func (mr *MockStoreMockRecorder) GetUserByUsername(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByUsername", reflect.TypeOf((*MockStore)(nil).GetUserByUsername), arg0, arg1)
 }
 
 // ListAccounts mocks base method.
@@ -343,6 +373,21 @@ func (m *MockStore) ListAllQuestionsByDifficulty(arg0 context.Context, arg1 db.L
 func (mr *MockStoreMockRecorder) ListAllQuestionsByDifficulty(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllQuestionsByDifficulty", reflect.TypeOf((*MockStore)(nil).ListAllQuestionsByDifficulty), arg0, arg1)
+}
+
+// ListAllQuestionsByType mocks base method.
+func (m *MockStore) ListAllQuestionsByType(arg0 context.Context, arg1 db.ListAllQuestionsByTypeParams) ([]db.Question, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListAllQuestionsByType", arg0, arg1)
+	ret0, _ := ret[0].([]db.Question)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListAllQuestionsByType indicates an expected call of ListAllQuestionsByType.
+func (mr *MockStoreMockRecorder) ListAllQuestionsByType(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllQuestionsByType", reflect.TypeOf((*MockStore)(nil).ListAllQuestionsByType), arg0, arg1)
 }
 
 // ListCategories mocks base method.
@@ -480,6 +525,21 @@ func (mr *MockStoreMockRecorder) UpdateCategory(arg0, arg1 interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCategory", reflect.TypeOf((*MockStore)(nil).UpdateCategory), arg0, arg1)
 }
 
+// UpdateLatestUserQuestionScore mocks base method.
+func (m *MockStore) UpdateLatestUserQuestionScore(arg0 context.Context, arg1 db.UpdateLatestUserQuestionScoreParams) (db.UserQuestionScore, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateLatestUserQuestionScore", arg0, arg1)
+	ret0, _ := ret[0].(db.UserQuestionScore)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateLatestUserQuestionScore indicates an expected call of UpdateLatestUserQuestionScore.
+func (mr *MockStoreMockRecorder) UpdateLatestUserQuestionScore(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLatestUserQuestionScore", reflect.TypeOf((*MockStore)(nil).UpdateLatestUserQuestionScore), arg0, arg1)
+}
+
 // UpdatePassword mocks base method.
 func (m *MockStore) UpdatePassword(arg0 context.Context, arg1 db.UpdatePasswordParams) (db.User, error) {
 	m.ctrl.T.Helper()
@@ -525,19 +585,19 @@ func (mr *MockStoreMockRecorder) UpdateUserGrade(arg0, arg1 interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserGrade", reflect.TypeOf((*MockStore)(nil).UpdateUserGrade), arg0, arg1)
 }
 
-// UpdateUserQuestionScore mocks base method.
-func (m *MockStore) UpdateUserQuestionScore(arg0 context.Context, arg1 db.UpdateUserQuestionScoreParams) (db.UserQuestionScore, error) {
+// UpdateUserUserQuestionScore mocks base method.
+func (m *MockStore) UpdateUserUserQuestionScore(arg0 context.Context, arg1 db.UpdateUserUserQuestionScoreParams) ([]db.UserQuestionScore, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateUserQuestionScore", arg0, arg1)
-	ret0, _ := ret[0].(db.UserQuestionScore)
+	ret := m.ctrl.Call(m, "UpdateUserUserQuestionScore", arg0, arg1)
+	ret0, _ := ret[0].([]db.UserQuestionScore)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// UpdateUserQuestionScore indicates an expected call of UpdateUserQuestionScore.
-func (mr *MockStoreMockRecorder) UpdateUserQuestionScore(arg0, arg1 interface{}) *gomock.Call {
+// UpdateUserUserQuestionScore indicates an expected call of UpdateUserUserQuestionScore.
+func (mr *MockStoreMockRecorder) UpdateUserUserQuestionScore(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserQuestionScore", reflect.TypeOf((*MockStore)(nil).UpdateUserQuestionScore), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserUserQuestionScore", reflect.TypeOf((*MockStore)(nil).UpdateUserUserQuestionScore), arg0, arg1)
 }
 
 // UpdateUsername mocks base method.

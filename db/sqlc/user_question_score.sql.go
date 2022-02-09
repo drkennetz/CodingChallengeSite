@@ -51,7 +51,7 @@ func (q *Queries) DeleteUserQuestionScore(ctx context.Context, id int64) error {
 
 const getLastUserQuestionScore = `-- name: GetLastUserQuestionScore :one
 SELECT id, user_id, question_id, score, is_most_recent, created_at, updated_at from user_question_score
-where user_id = $1 and question_id = $2 and is_most_recent = true
+where user_id = $1 and question_id = $2 and is_most_recent = true LIMIT 1
 `
 
 type GetLastUserQuestionScoreParams struct {
@@ -169,21 +169,21 @@ func (q *Queries) ListQuestionScoresByUser(ctx context.Context, arg ListQuestion
 	return items, nil
 }
 
-const updateUserQuestionScore = `-- name: UpdateUserQuestionScore :one
+const updateLatestUserQuestionScore = `-- name: UpdateLatestUserQuestionScore :one
 UPDATE user_question_score
 SET is_most_recent = $3
 where user_id = $1 and question_id = $2
 RETURNING id, user_id, question_id, score, is_most_recent, created_at, updated_at
 `
 
-type UpdateUserQuestionScoreParams struct {
+type UpdateLatestUserQuestionScoreParams struct {
 	UserID       int64        `json:"user_id"`
 	QuestionID   int64        `json:"question_id"`
 	IsMostRecent sql.NullBool `json:"is_most_recent"`
 }
 
-func (q *Queries) UpdateUserQuestionScore(ctx context.Context, arg UpdateUserQuestionScoreParams) (UserQuestionScore, error) {
-	row := q.db.QueryRowContext(ctx, updateUserQuestionScore, arg.UserID, arg.QuestionID, arg.IsMostRecent)
+func (q *Queries) UpdateLatestUserQuestionScore(ctx context.Context, arg UpdateLatestUserQuestionScoreParams) (UserQuestionScore, error) {
+	row := q.db.QueryRowContext(ctx, updateLatestUserQuestionScore, arg.UserID, arg.QuestionID, arg.IsMostRecent)
 	var i UserQuestionScore
 	err := row.Scan(
 		&i.ID,
@@ -195,4 +195,47 @@ func (q *Queries) UpdateUserQuestionScore(ctx context.Context, arg UpdateUserQue
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const updateUserUserQuestionScore = `-- name: UpdateUserUserQuestionScore :many
+UPDATE user_question_score
+SET user_id = $2
+where user_id = $1
+RETURNING id, user_id, question_id, score, is_most_recent, created_at, updated_at
+`
+
+type UpdateUserUserQuestionScoreParams struct {
+	UserID   int64 `json:"user_id"`
+	UserID_2 int64 `json:"user_id_2"`
+}
+
+func (q *Queries) UpdateUserUserQuestionScore(ctx context.Context, arg UpdateUserUserQuestionScoreParams) ([]UserQuestionScore, error) {
+	rows, err := q.db.QueryContext(ctx, updateUserUserQuestionScore, arg.UserID, arg.UserID_2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []UserQuestionScore{}
+	for rows.Next() {
+		var i UserQuestionScore
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.QuestionID,
+			&i.Score,
+			&i.IsMostRecent,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

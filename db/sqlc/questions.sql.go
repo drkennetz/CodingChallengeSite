@@ -14,19 +14,21 @@ INSERT INTO questions (
     example,
     difficulty,
     complexity,
-    completion_time
+    completion_time,
+    question_type
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4, $5, $6, $7
 ) RETURNING id, challenge_name, description, example, difficulty, complexity, completion_time, question_type, created_at, updated_at
 `
 
 type CreateQuestionParams struct {
-	ChallengeName  string `json:"challenge_name"`
-	Description    string `json:"description"`
-	Example        string `json:"example"`
-	Difficulty     int32  `json:"difficulty"`
-	Complexity     string `json:"complexity"`
-	CompletionTime int32  `json:"completion_time"`
+	ChallengeName  string       `json:"challenge_name"`
+	Description    string       `json:"description"`
+	Example        string       `json:"example"`
+	Difficulty     int32        `json:"difficulty"`
+	Complexity     string       `json:"complexity"`
+	CompletionTime int32        `json:"completion_time"`
+	QuestionType   QuestionType `json:"question_type"`
 }
 
 func (q *Queries) CreateQuestion(ctx context.Context, arg CreateQuestionParams) (Question, error) {
@@ -37,6 +39,7 @@ func (q *Queries) CreateQuestion(ctx context.Context, arg CreateQuestionParams) 
 		arg.Difficulty,
 		arg.Complexity,
 		arg.CompletionTime,
+		arg.QuestionType,
 	)
 	var i Question
 	err := row.Scan(
@@ -89,7 +92,7 @@ func (q *Queries) GetQuestion(ctx context.Context, id int64) (Question, error) {
 
 const listAllQuestions = `-- name: ListAllQuestions :many
 SELECT id, challenge_name, description, example, difficulty, complexity, completion_time, question_type, created_at, updated_at from questions
-ORDER BY difficulty
+ORDER BY ASCENDING(difficulty)
 LIMIT $1
 OFFSET $2
 `
@@ -149,6 +152,54 @@ type ListAllQuestionsByDifficultyParams struct {
 
 func (q *Queries) ListAllQuestionsByDifficulty(ctx context.Context, arg ListAllQuestionsByDifficultyParams) ([]Question, error) {
 	rows, err := q.db.QueryContext(ctx, listAllQuestionsByDifficulty, arg.Difficulty, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Question{}
+	for rows.Next() {
+		var i Question
+		if err := rows.Scan(
+			&i.ID,
+			&i.ChallengeName,
+			&i.Description,
+			&i.Example,
+			&i.Difficulty,
+			&i.Complexity,
+			&i.CompletionTime,
+			&i.QuestionType,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listAllQuestionsByType = `-- name: ListAllQuestionsByType :many
+SELECT id, challenge_name, description, example, difficulty, complexity, completion_time, question_type, created_at, updated_at from questions
+where question_type = $1
+ORDER BY ASCENDING(difficulty)
+LIMIT $2
+OFFSET $3
+`
+
+type ListAllQuestionsByTypeParams struct {
+	QuestionType QuestionType `json:"question_type"`
+	Limit        int32        `json:"limit"`
+	Offset       int32        `json:"offset"`
+}
+
+func (q *Queries) ListAllQuestionsByType(ctx context.Context, arg ListAllQuestionsByTypeParams) ([]Question, error) {
+	rows, err := q.db.QueryContext(ctx, listAllQuestionsByType, arg.QuestionType, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

@@ -11,6 +11,10 @@ INSERT INTO accounts (
 SELECT * FROM accounts
 where id = $1 LIMIT 1;
 
+-- name: GetAccountByEmail :one
+SELECT * FROM accounts
+where email = $1 LIMIT 1;
+
 -- name: ListAccounts :many
 SELECT * FROM accounts
 ORDER BY id

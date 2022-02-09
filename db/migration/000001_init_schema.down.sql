@@ -5,4 +5,5 @@ DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS questions;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS accounts;
-DROP TYPE dev_level;
+DROP TYPE IF EXISTS question_type;
+DROP TYPE IF EXISTS dev_level;

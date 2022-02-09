@@ -16,6 +16,7 @@ func createRandomQuestion(t *testing.T, i int) Question {
 		Difficulty: 1,
 		Complexity: "O(1) | O(1)",
 		CompletionTime: 10,
+		QuestionType: QuestionTypePractice,
 	}
 
 	question, err := testQueries.CreateQuestion(context.Background(), arg)
@@ -29,6 +30,7 @@ func createRandomQuestion(t *testing.T, i int) Question {
 	require.Equal(t, arg.Difficulty, question.Difficulty)
 	require.Equal(t, arg.Complexity, question.Complexity)
 	require.Equal(t, arg.CompletionTime, question.CompletionTime)
+	require.Equal(t, arg.QuestionType, question.QuestionType)
 
 	// tests that auto populated field were populated
 	require.NotZero(t, question.ID)

@@ -5,9 +5,10 @@ INSERT INTO questions (
     example,
     difficulty,
     complexity,
-    completion_time
+    completion_time,
+    question_type
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4, $5, $6, $7
 ) RETURNING *;
 
 -- name: GetQuestion :one
@@ -23,7 +24,7 @@ RETURNING *;
 
 -- name: ListAllQuestions :many
 SELECT * from questions
-ORDER BY difficulty
+ORDER BY ASCENDING(difficulty)
 LIMIT $1
 OFFSET $2;
 
@@ -37,3 +38,10 @@ OFFSET $3;
 -- name: DeleteQuestion :exec
 DELETE FROM questions
 where id = $1;
+
+-- name: ListAllQuestionsByType :many
+SELECT * from questions
+where question_type = $1
+ORDER BY ASCENDING(difficulty)
+LIMIT $2
+OFFSET $3;

@@ -39,6 +39,11 @@ func TestCreateAccountUserTx(t *testing.T) {
 			result, err := store.CreateAccountUserTx(ctx, arg)
 			errs <- err
 			results <- result
+			err = store.DeleteAccountUserTx(ctx, DeleteAccountUserTxParams{
+				Email: arg.Email,
+				Username: arg.Username,
+			})
+			errs <- err
 		}()
 	}
 

@@ -52,6 +52,8 @@ func TestGetAccount(t *testing.T) {
 	require.Equal(t, account1.OptedIn, account2.OptedIn)
 	require.WithinDuration(t, account1.CreatedAt, account2.CreatedAt, time.Second)
 	require.WithinDuration(t, account1.UpdatedAt, account2.UpdatedAt, time.Second)
+	err = testQueries.DeleteAccount(context.Background(), account2.ID)
+	require.NoError(t, err)
 }
 
 func TestUpdateAccountEmail(t *testing.T) {
@@ -66,6 +68,8 @@ func TestUpdateAccountEmail(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, account2)
 	require.NotEqual(t, account1.Email, account2.Email)
+	err = testQueries.DeleteAccount(context.Background(), account2.ID)
+	require.NoError(t, err)
 }
 
 func TestUpdateAccountFullName(t *testing.T) {
@@ -80,6 +84,8 @@ func TestUpdateAccountFullName(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, account2)
 	require.NotEqual(t, account1.FullName, account2.FullName)
+	err = testQueries.DeleteAccount(context.Background(), account2.ID)
+	require.NoError(t, err)
 }
 
 func TestUpdateAccountOptedIn(t *testing.T) {
@@ -94,6 +100,8 @@ func TestUpdateAccountOptedIn(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, account2)
 	require.True(t, account2.OptedIn)
+	err = testQueries.DeleteAccount(context.Background(), account2.ID)
+	require.NoError(t, err)
 }
 
 func TestDeleteAccount(t *testing.T) {
@@ -123,5 +131,7 @@ func TestListAccounts(t *testing.T) {
 
 	for _, account := range accounts {
 		require.NotEmpty(t, account)
+		err = testQueries.DeleteAccount(context.Background(), account.ID)
+		require.NoError(t, err)
 	}
 }
