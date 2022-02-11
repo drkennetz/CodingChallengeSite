@@ -35,12 +35,15 @@ func createRandomUser(t *testing.T) User {
 	require.Equal(t, arg2.Username, user.Username)
 	require.Equal(t, arg2.Password, user.Password)
 	require.Equal(t, arg2.Grade, user.Grade)
-
 	return user
 }
 
 func TestCreateUser(t *testing.T) {
-	createRandomUser(t)
+	user1 := createRandomUser(t)
+	err := testQueries.DeleteUser(context.Background(), user1.ID)
+	require.NoError(t, err)
+	err = testQueries.DeleteAccount(context.Background(), user1.AccountID)
+	require.NoError(t, err)
 }
 
 func TestGetUser(t *testing.T) {
@@ -53,11 +56,14 @@ func TestGetUser(t *testing.T) {
 	require.Equal(t, user1.Username, user2.Username)
 	require.Equal(t, user1.AccountID, user2.AccountID)
 	require.Equal(t, user1.Grade, user2.Grade)
+	err = testQueries.DeleteUser(context.Background(), user1.ID)
+	require.NoError(t, err)
+	err = testQueries.DeleteAccount(context.Background(), user1.AccountID)
+	require.NoError(t, err)
 }
 
 func TestDeleteUser(t *testing.T) {
 	user1 := createRandomUser(t)
-
 	err := testQueries.DeleteUser(context.Background(), user1.ID)
 	require.NoError(t, err)
 	err = testQueries.DeleteAccount(context.Background(), user1.AccountID)
@@ -68,21 +74,28 @@ func TestDeleteUser(t *testing.T) {
 }
 
 func TestListUsers(t *testing.T) {
+	randoms := make([]User, 10)
 	for i := 0; i < 10; i++ {
-		createRandomUser(t)
+		randoms[i] = createRandomUser(t)
 	}
 
 	arg := ListUsersParams {
-		Limit: 5,
-		Offset: 5,
+		Limit: 10,
+		Offset: 0,
 	}
 
 	users, err := testQueries.ListUsers(context.Background(), arg)
 	require.NoError(t, err)
-	require.Len(t, users, 5)
+	require.Len(t, users, 10)
 
 	for _, user := range users {
 		require.NotEmpty(t, user)
+	}
+	for _, user := range randoms {
+		err = testQueries.DeleteUser(context.Background(), user.ID)
+		require.NoError(t, err)
+		err = testQueries.DeleteAccount(context.Background(), user.AccountID)
+		require.NoError(t, err)
 	}
 }
 
@@ -96,6 +109,10 @@ func TestUpdateUserGrade(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
 	require.True(t, user2.Grade == DevLevelMidlevel)
+	err = testQueries.DeleteUser(context.Background(), user2.ID)
+	require.NoError(t, err)
+	err = testQueries.DeleteAccount(context.Background(), user2.AccountID)
+	require.NoError(t, err)
 }
 
 func TestUpdateAdminStatus(t *testing.T) {
@@ -108,6 +125,10 @@ func TestUpdateAdminStatus(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
 	require.True(t, user2.AdminUser)
+	err = testQueries.DeleteUser(context.Background(), user2.ID)
+	require.NoError(t, err)
+	err = testQueries.DeleteAccount(context.Background(), user2.AccountID)
+	require.NoError(t, err)
 }
 
 func TestUpdateUsername(t *testing.T) {
@@ -120,6 +141,10 @@ func TestUpdateUsername(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
 	require.True(t, user2.Username == "Testing This")
+	err = testQueries.DeleteUser(context.Background(), user2.ID)
+	require.NoError(t, err)
+	err = testQueries.DeleteAccount(context.Background(), user2.AccountID)
+	require.NoError(t, err)
 }
 
 func TestUpdatePassword(t *testing.T) {
@@ -131,5 +156,8 @@ func TestUpdatePassword(t *testing.T) {
 	user2, err := testQueries.UpdatePassword(context.Background(), arg)
 	require.NoError(t, err)
 	require.True(t, user2.Password == "TestPsswd")
-
+	err = testQueries.DeleteUser(context.Background(), user2.ID)
+	require.NoError(t, err)
+	err = testQueries.DeleteAccount(context.Background(), user2.AccountID)
+	require.NoError(t, err)
 }

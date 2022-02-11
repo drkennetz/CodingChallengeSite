@@ -10,4 +10,4 @@ INSERT INTO question_categories (
 SELECT * from questions
 where id in (
     SELECT question_id from question_categories where category_id = $1
-) ORDER BY ASCENDING(difficulty);
+) ORDER BY difficulty ASC;

@@ -11,12 +11,19 @@ INSERT INTO user_question_score (
 SELECT * from user_question_score
 where user_id = $1 and question_id = $2 and is_most_recent = true LIMIT 1;
 
--- name: ListQuestionScoresByUser :many
+-- name: ListSingleQuestionScoresByUser :many
 SELECT * from user_question_score
 where user_id = $1 and question_id = $2
-ORDER BY DESCENDING(id)
+ORDER BY score DESC
 LIMIT $3
 OFFSET $4;
+
+-- name: ListAllQuestionScoresByUser :many
+SELECT * from user_question_score
+where user_id = $1
+ORDER BY score DESC
+LIMIT $2
+OFFSET $3;
 
 -- name: ListLastScoresByQuestion :many
 SELECT * from user_question_score

@@ -35,7 +35,9 @@ func createRandomAccount(t *testing.T) Account{
 }
 
 func TestCreateAccount(t *testing.T) {
-	createRandomAccount(t)
+	account1 := createRandomAccount(t)
+	testQueries.DeleteAccount(context.Background(), account1.ID)
+
 }
 
 func TestGetAccount(t *testing.T) {

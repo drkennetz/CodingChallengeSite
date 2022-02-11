@@ -41,5 +41,7 @@ func createRandomQuestion(t *testing.T, i int) Question {
 }
 
 func TestCreateQuestion(t *testing.T) {
-	createRandomQuestion(t, 1)
+	q := createRandomQuestion(t, 1)
+	err := testQueries.DeleteQuestion(context.Background(), q.ID)
+	require.NoError(t, err)
 }

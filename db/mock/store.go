@@ -154,6 +154,20 @@ func (mr *MockStoreMockRecorder) DeleteAccount(arg0, arg1 interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAccount", reflect.TypeOf((*MockStore)(nil).DeleteAccount), arg0, arg1)
 }
 
+// DeleteAccountUserTx mocks base method.
+func (m *MockStore) DeleteAccountUserTx(arg0 context.Context, arg1 db.DeleteAccountUserTxParams) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteAccountUserTx", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteAccountUserTx indicates an expected call of DeleteAccountUserTx.
+func (mr *MockStoreMockRecorder) DeleteAccountUserTx(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAccountUserTx", reflect.TypeOf((*MockStore)(nil).DeleteAccountUserTx), arg0, arg1)
+}
+
 // DeleteCategory mocks base method.
 func (m *MockStore) DeleteCategory(arg0 context.Context, arg1 int64) error {
 	m.ctrl.T.Helper()
@@ -330,6 +344,21 @@ func (mr *MockStoreMockRecorder) ListAccounts(arg0, arg1 interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAccounts", reflect.TypeOf((*MockStore)(nil).ListAccounts), arg0, arg1)
 }
 
+// ListAllQuestionScoresByUser mocks base method.
+func (m *MockStore) ListAllQuestionScoresByUser(arg0 context.Context, arg1 db.ListAllQuestionScoresByUserParams) ([]db.UserQuestionScore, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListAllQuestionScoresByUser", arg0, arg1)
+	ret0, _ := ret[0].([]db.UserQuestionScore)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListAllQuestionScoresByUser indicates an expected call of ListAllQuestionScoresByUser.
+func (mr *MockStoreMockRecorder) ListAllQuestionScoresByUser(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllQuestionScoresByUser", reflect.TypeOf((*MockStore)(nil).ListAllQuestionScoresByUser), arg0, arg1)
+}
+
 // ListAllQuestions mocks base method.
 func (m *MockStore) ListAllQuestions(arg0 context.Context, arg1 db.ListAllQuestionsParams) ([]db.Question, error) {
 	m.ctrl.T.Helper()
@@ -420,19 +449,19 @@ func (mr *MockStoreMockRecorder) ListLastScoresByQuestion(arg0, arg1 interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListLastScoresByQuestion", reflect.TypeOf((*MockStore)(nil).ListLastScoresByQuestion), arg0, arg1)
 }
 
-// ListQuestionScoresByUser mocks base method.
-func (m *MockStore) ListQuestionScoresByUser(arg0 context.Context, arg1 db.ListQuestionScoresByUserParams) ([]db.UserQuestionScore, error) {
+// ListSingleQuestionScoresByUser mocks base method.
+func (m *MockStore) ListSingleQuestionScoresByUser(arg0 context.Context, arg1 db.ListSingleQuestionScoresByUserParams) ([]db.UserQuestionScore, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListQuestionScoresByUser", arg0, arg1)
+	ret := m.ctrl.Call(m, "ListSingleQuestionScoresByUser", arg0, arg1)
 	ret0, _ := ret[0].([]db.UserQuestionScore)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ListQuestionScoresByUser indicates an expected call of ListQuestionScoresByUser.
-func (mr *MockStoreMockRecorder) ListQuestionScoresByUser(arg0, arg1 interface{}) *gomock.Call {
+// ListSingleQuestionScoresByUser indicates an expected call of ListSingleQuestionScoresByUser.
+func (mr *MockStoreMockRecorder) ListSingleQuestionScoresByUser(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListQuestionScoresByUser", reflect.TypeOf((*MockStore)(nil).ListQuestionScoresByUser), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListSingleQuestionScoresByUser", reflect.TypeOf((*MockStore)(nil).ListSingleQuestionScoresByUser), arg0, arg1)
 }
 
 // ListUsers mocks base method.

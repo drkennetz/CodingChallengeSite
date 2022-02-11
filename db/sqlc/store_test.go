@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strings"
 	"testing"
@@ -83,8 +84,37 @@ func TestCreateAccountUserTx(t *testing.T) {
 		_, err = store.GetAUser(context.Background(), result.User.ID)
 		require.NoError(t, err)
 	}
+}
 
+func TestDeleteAccountUserTx(t *testing.T) {
+	store := NewStore(testDB)
+	arg := CreateAccountUserTxParams {
+		FullName: "Birdman Junior",
+		Email: "birdman@aol.com",
+		OptedIn: true,
+		AdminUser: false,
+		Username: "birdman1",
+		Password: "password",
+		Grade: DevLevelJunior,
+	}
 
+	txName := "tx 1"
+	ctx := context.WithValue(context.Background(), txKey, txName)
+	result, err := store.CreateAccountUserTx(ctx, arg)
+	require.NoError(t, err)
+	require.Equal(t, result.Account.Email, arg.Email)
+	require.Equal(t, result.Account.FullName, arg.FullName)
+	require.Equal(t, result.User.Username, arg.Username)
+	require.Equal(t, result.User.AdminUser, arg.AdminUser)
+	require.Equal(t, result.User.Grade, arg.Grade)
 
-
+	deleteArg := DeleteAccountUserTxParams {
+		Email: arg.Email,
+		Username: arg.Username,
+	}
+	err = store.DeleteAccountUserTx(ctx, deleteArg)
+	require.NoError(t, err)
+	retrieved, err := store.GetAUser(context.Background(), result.User.ID)
+	require.Equal(t, err, sql.ErrNoRows)
+	require.Empty(t, retrieved)
 }

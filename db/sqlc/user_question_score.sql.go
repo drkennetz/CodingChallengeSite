@@ -74,6 +74,51 @@ func (q *Queries) GetLastUserQuestionScore(ctx context.Context, arg GetLastUserQ
 	return i, err
 }
 
+const listAllQuestionScoresByUser = `-- name: ListAllQuestionScoresByUser :many
+SELECT id, user_id, question_id, score, is_most_recent, created_at, updated_at from user_question_score
+where user_id = $1
+ORDER BY score DESC
+LIMIT $2
+OFFSET $3
+`
+
+type ListAllQuestionScoresByUserParams struct {
+	UserID int64 `json:"user_id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) ListAllQuestionScoresByUser(ctx context.Context, arg ListAllQuestionScoresByUserParams) ([]UserQuestionScore, error) {
+	rows, err := q.db.QueryContext(ctx, listAllQuestionScoresByUser, arg.UserID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []UserQuestionScore{}
+	for rows.Next() {
+		var i UserQuestionScore
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.QuestionID,
+			&i.Score,
+			&i.IsMostRecent,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listLastScoresByQuestion = `-- name: ListLastScoresByQuestion :many
 SELECT id, user_id, question_id, score, is_most_recent, created_at, updated_at from user_question_score
 where question_id = $1 and is_most_recent = true
@@ -118,23 +163,23 @@ func (q *Queries) ListLastScoresByQuestion(ctx context.Context, arg ListLastScor
 	return items, nil
 }
 
-const listQuestionScoresByUser = `-- name: ListQuestionScoresByUser :many
+const listSingleQuestionScoresByUser = `-- name: ListSingleQuestionScoresByUser :many
 SELECT id, user_id, question_id, score, is_most_recent, created_at, updated_at from user_question_score
 where user_id = $1 and question_id = $2
-ORDER BY DESCENDING(id)
+ORDER BY score DESC
 LIMIT $3
 OFFSET $4
 `
 
-type ListQuestionScoresByUserParams struct {
+type ListSingleQuestionScoresByUserParams struct {
 	UserID     int64 `json:"user_id"`
 	QuestionID int64 `json:"question_id"`
 	Limit      int32 `json:"limit"`
 	Offset     int32 `json:"offset"`
 }
 
-func (q *Queries) ListQuestionScoresByUser(ctx context.Context, arg ListQuestionScoresByUserParams) ([]UserQuestionScore, error) {
-	rows, err := q.db.QueryContext(ctx, listQuestionScoresByUser,
+func (q *Queries) ListSingleQuestionScoresByUser(ctx context.Context, arg ListSingleQuestionScoresByUserParams) ([]UserQuestionScore, error) {
+	rows, err := q.db.QueryContext(ctx, listSingleQuestionScoresByUser,
 		arg.UserID,
 		arg.QuestionID,
 		arg.Limit,

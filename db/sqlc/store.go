@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
+	//"log"
 )
 
 // Store provides all functions to execute db queries and transactions
@@ -134,37 +134,56 @@ func (store *SQLStore) DeleteAccountUserTx(ctx context.Context, arg DeleteAccoun
 	err := store.execTx(ctx, func(q *Queries) error {
 		var err error
 		txName := ctx.Value(txKey)
-		log.Println("Beginning transaction to delete account", txName)
+		fmt.Println("Beginning transaction to delete account", txName)
 		account, err := q.GetAccountByEmail(ctx, arg.Email)
 		if err != nil {
 			return err
 		}
+		fmt.Println(account.Email, " Retrieved.")
 		user, err := q.GetUserByUsername(ctx, arg.Username)
 		if err != nil {
 			return err
 		}
+		fmt.Println(user.Username, "Retrieved.")
 		// This is where we will move data.
 		defaultUser, err := q.GetUserByUsername(ctx, string(user.Grade))
 		if err != nil {
 			return err
 		}
-		scores, err := q.UpdateUserUserQuestionScore(ctx, UpdateUserUserQuestionScoreParams{
+		fmt.Println(defaultUser.Username, "Retrieved")
+		// need to see if user has any questions with listalluserquestionscores
+		// should paginate only a few results
+		hasScores, err := q.ListAllQuestionScoresByUser(ctx, ListAllQuestionScoresByUserParams{
 			UserID: user.ID,
-			UserID_2: defaultUser.ID,
 		})
-		if err != sql.ErrNoRows {
+		fmt.Println("Recovered scores")
+		if err == sql.ErrNoRows {
+			fmt.Printf("user %s returned %v scores... continuing", user.Username, len(hasScores))
+		} else if err != nil {
 			return err
-		}
-		log.Printf("Total scores updated: %v from %s to %s", len(scores), user.Username, defaultUser.Username)
+		} else {
+			scores, err := q.UpdateUserUserQuestionScore(ctx, UpdateUserUserQuestionScoreParams{
+				UserID: user.ID,
+				UserID_2: defaultUser.ID,
+			})
+			if err != nil {
+				return err
+			}
+			fmt.Printf("Total scores updated: %v from %s to %s", len(scores), user.Username, defaultUser.Username)
+		} 
+		
+		fmt.Println("successfully updated or skipped scores, deleting user and account...")
 		err = q.DeleteUser(ctx, user.ID)
 		if err != nil {
 			return err
 		}
+		fmt.Println(user.Username, "deleted.")
 		err = q.DeleteAccount(ctx, account.ID)
 		if err != nil {
 			return err
 		}
-		log.Println("Completed transaction to delete account", txName)
+		fmt.Println(account.Email, "deleted.")
+		fmt.Println("Completed transaction to delete account", txName)
 		return nil
 	})
 	return err

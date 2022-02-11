@@ -92,7 +92,7 @@ func (q *Queries) GetQuestion(ctx context.Context, id int64) (Question, error) {
 
 const listAllQuestions = `-- name: ListAllQuestions :many
 SELECT id, challenge_name, description, example, difficulty, complexity, completion_time, question_type, created_at, updated_at from questions
-ORDER BY ASCENDING(difficulty)
+ORDER BY difficulty ASC
 LIMIT $1
 OFFSET $2
 `
@@ -139,7 +139,7 @@ func (q *Queries) ListAllQuestions(ctx context.Context, arg ListAllQuestionsPara
 const listAllQuestionsByDifficulty = `-- name: ListAllQuestionsByDifficulty :many
 SELECT id, challenge_name, description, example, difficulty, complexity, completion_time, question_type, created_at, updated_at from questions
 where difficulty = $1
-ORDER BY ASCENDING(difficulty)
+ORDER BY difficulty ASC
 LIMIT $2
 OFFSET $3
 `
@@ -187,7 +187,7 @@ func (q *Queries) ListAllQuestionsByDifficulty(ctx context.Context, arg ListAllQ
 const listAllQuestionsByType = `-- name: ListAllQuestionsByType :many
 SELECT id, challenge_name, description, example, difficulty, complexity, completion_time, question_type, created_at, updated_at from questions
 where question_type = $1
-ORDER BY ASCENDING(difficulty)
+ORDER BY difficulty ASC
 LIMIT $2
 OFFSET $3
 `

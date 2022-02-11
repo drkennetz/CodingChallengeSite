@@ -32,7 +32,7 @@ const listAllQuestionsByCategory = `-- name: ListAllQuestionsByCategory :many
 SELECT id, challenge_name, description, example, difficulty, complexity, completion_time, question_type, created_at, updated_at from questions
 where id in (
     SELECT question_id from question_categories where category_id = $1
-) ORDER BY ASCENDING(difficulty)
+) ORDER BY difficulty ASC
 `
 
 func (q *Queries) ListAllQuestionsByCategory(ctx context.Context, categoryID int64) ([]Question, error) {

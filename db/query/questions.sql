@@ -24,14 +24,14 @@ RETURNING *;
 
 -- name: ListAllQuestions :many
 SELECT * from questions
-ORDER BY ASCENDING(difficulty)
+ORDER BY difficulty ASC
 LIMIT $1
 OFFSET $2;
 
 -- name: ListAllQuestionsByDifficulty :many
 SELECT * from questions
 where difficulty = $1
-ORDER BY ASCENDING(difficulty)
+ORDER BY difficulty ASC
 LIMIT $2
 OFFSET $3;
 
@@ -42,6 +42,6 @@ where id = $1;
 -- name: ListAllQuestionsByType :many
 SELECT * from questions
 where question_type = $1
-ORDER BY ASCENDING(difficulty)
+ORDER BY difficulty ASC
 LIMIT $2
 OFFSET $3;
