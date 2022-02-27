@@ -110,6 +110,21 @@ func (mr *MockStoreMockRecorder) CreateQuestionCategory(arg0, arg1 interface{}) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateQuestionCategory", reflect.TypeOf((*MockStore)(nil).CreateQuestionCategory), arg0, arg1)
 }
 
+// CreateQuestionCategoryTx mocks base method.
+func (m *MockStore) CreateQuestionCategoryTx(arg0 context.Context, arg1 db.CreateQuestionCategoryTxParams) (db.CreateQuestionCategoryTxResult, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateQuestionCategoryTx", arg0, arg1)
+	ret0, _ := ret[0].(db.CreateQuestionCategoryTxResult)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateQuestionCategoryTx indicates an expected call of CreateQuestionCategoryTx.
+func (mr *MockStoreMockRecorder) CreateQuestionCategoryTx(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateQuestionCategoryTx", reflect.TypeOf((*MockStore)(nil).CreateQuestionCategoryTx), arg0, arg1)
+}
+
 // CreateUser mocks base method.
 func (m *MockStore) CreateUser(arg0 context.Context, arg1 db.CreateUserParams) (db.User, error) {
 	m.ctrl.T.Helper()
@@ -237,6 +252,21 @@ func (m *MockStore) GetACategoryByID(arg0 context.Context, arg1 int64) (db.Categ
 func (mr *MockStoreMockRecorder) GetACategoryByID(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetACategoryByID", reflect.TypeOf((*MockStore)(nil).GetACategoryByID), arg0, arg1)
+}
+
+// GetACategoryIDByName mocks base method.
+func (m *MockStore) GetACategoryIDByName(arg0 context.Context, arg1 string) (db.Category, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetACategoryIDByName", arg0, arg1)
+	ret0, _ := ret[0].(db.Category)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetACategoryIDByName indicates an expected call of GetACategoryIDByName.
+func (mr *MockStoreMockRecorder) GetACategoryIDByName(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetACategoryIDByName", reflect.TypeOf((*MockStore)(nil).GetACategoryIDByName), arg0, arg1)
 }
 
 // GetAUser mocks base method.

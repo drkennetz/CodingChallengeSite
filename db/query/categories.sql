@@ -9,6 +9,10 @@ INSERT INTO categories (
 SELECT * FROM categories
 where id = $1 LIMIT 1;
 
+-- name: GetACategoryIDByName :one
+SELECT * from categories
+where category = $1 LIMIT 1;
+
 -- name: ListCategories :many
 SELECT * FROM categories
 ORDER BY id

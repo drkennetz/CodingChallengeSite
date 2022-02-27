@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	//"log"
 )
 
@@ -12,6 +13,7 @@ type Store interface {
 	Querier
 	CreateAccountUserTx(ctx context.Context, arg CreateAccountUserTxParams) (CreateAccountUserTxResult, error)
 	DeleteAccountUserTx(ctx context.Context, arg DeleteAccountUserTxParams) (error)
+	CreateQuestionCategoryTx(ctx context.Context, arg CreateQuestionCategoryTxParams) (CreateQuestionCategoryTxResult, error)
 }
 
 // SQLStore provides all functions to execute SQL db queries and transactions
@@ -86,7 +88,7 @@ func (store *SQLStore) CreateAccountUserTx(ctx context.Context, arg CreateAccoun
 		var err error
 		txName := ctx.Value(txKey)
 
-		fmt.Println(txName, "create account")
+		log.Println(txName, "create account")
 		result.Account, err = q.CreateAccount(ctx, CreateAccountParams{
 			FullName: arg.FullName,
 			Email: arg.Email,
@@ -99,12 +101,12 @@ func (store *SQLStore) CreateAccountUserTx(ctx context.Context, arg CreateAccoun
 		// to ensure deadlock prevention (IE we are not accessing the user before it is created)
 		// we can query the database for the account. This ensures the account exists in the database prior to 
 		// creating a user from that account:
-		fmt.Println(txName, "make sure account exists in db by retrieving it and locking it until user is created")
+		log.Println(txName, "make sure account exists in db by retrieving it and locking it until user is created")
 		resultAcc, err := q.GetAccount(ctx, result.Account.ID)
 		if err != nil {
 			return err
 		}
-		fmt.Println(txName, "create user")
+		log.Println(txName, "create user")
 		result.User, err = q.CreateUser(ctx, CreateUserParams{
 			AccountID: resultAcc.ID,
 			AdminUser: arg.AdminUser,
@@ -190,13 +192,64 @@ func (store *SQLStore) DeleteAccountUserTx(ctx context.Context, arg DeleteAccoun
 }
 // question creation (requires category selection) -> question_category records
 
-// delete operations related to a question should be rolled into a transaction
+// CreateQuestionCategoryTxParams stores all the information needed to insert a question, and its relevant category
+type CreateQuestionCategoryTxParams struct {
+	ChallengeName string `json:"challenge_name"`
+	Description string `json:"description"`
+	Example string `json:"example"`
+	Difficulty int32 `json:"difficulty"`
+	Complexity string `json:"complexity"`
+	CompletionTime int32 `json:"completion_time"`
+	QuestionType QuestionType `json:"question_type"`
+	Category string `json:"category"`
+}
 
-// delete question operations should be done in tx
+// CreateQuestionCategoryTxResult stores the results of the transaction
+type CreateQuestionCategoryTxResult struct {
+	Question Question
+	QuestionCategory QuestionCategory
+}
 
-// delete category ""
+// CreateQuestionCategoryTx creates an Question and a QuestionCategory record in a transaction, since a question should always be assigned a category
+func (store *SQLStore) CreateQuestionCategoryTx(ctx context.Context, arg CreateQuestionCategoryTxParams) (CreateQuestionCategoryTxResult, error) {
+	var result CreateQuestionCategoryTxResult
 
-// delete account ""
+	err := store.execTx(ctx, func(q *Queries) error {
+		var err error
+		txName := ctx.Value(txKey)
+
+		log.Println(txName, "create Question and QuestionCategory")
+		result.Question, err = q.CreateQuestion(ctx, CreateQuestionParams{
+			ChallengeName: arg.ChallengeName,
+			Description: arg.Description,
+			Example: arg.Example,
+			Difficulty: arg.Difficulty,
+			Complexity: arg.Complexity,
+			CompletionTime: arg.CompletionTime,
+			QuestionType: arg.QuestionType,
+		})
+		if err != nil {
+			return err
+		}
+		log.Println(txName, "Get Category ID for Question Category Creation")
+		category, err := q.GetACategoryIDByName(ctx, arg.Category)
+		if err != nil {
+			return err
+		}
+		log.Println(txName, "Create QuestionCategory")
+		result.QuestionCategory, err = q.CreateQuestionCategory(ctx, CreateQuestionCategoryParams{
+			QuestionID: result.Question.ID,
+			CategoryID: category.ID,
+		})
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	return result, err
+}
+
+// insert many question test cases in single transaction
 
 // insert new user_question_score can set the old score to false
 // and then add the new one

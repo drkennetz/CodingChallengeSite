@@ -19,6 +19,7 @@ type Querier interface {
 	DeleteUser(ctx context.Context, id int64) error
 	DeleteUserQuestionScore(ctx context.Context, id int64) error
 	GetACategoryByID(ctx context.Context, id int64) (Category, error)
+	GetACategoryIDByName(ctx context.Context, category string) (Category, error)
 	GetAUser(ctx context.Context, id int64) (User, error)
 	GetAccount(ctx context.Context, id int64) (Account, error)
 	GetAccountByEmail(ctx context.Context, email string) (Account, error)

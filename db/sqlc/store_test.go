@@ -118,3 +118,38 @@ func TestDeleteAccountUserTx(t *testing.T) {
 	require.Equal(t, err, sql.ErrNoRows)
 	require.Empty(t, retrieved)
 }
+
+func TestCreateQuestionCategoryTx(t *testing.T) {
+	store := NewStore(testDB)
+	arg := CreateQuestionCategoryTxParams {
+		ChallengeName: "Test Challenge",
+		Description: "Test Description",
+		Example: "Test Example",
+		Difficulty: 1,
+		Complexity: "O(n) | O(1)",
+		CompletionTime: 10,
+		QuestionType: QuestionTypePractice,
+		Category: "math",
+	}
+	txName := "Successful Question Category Tx"
+	ctx := context.WithValue(context.Background(), txKey, txName)
+	result, err := store.CreateQuestionCategoryTx(ctx, arg)
+	require.NoError(t, err)
+	require.Equal(t, result.Question.ChallengeName, arg.ChallengeName)
+	require.Equal(t, result.Question.Description, arg.Description)
+	require.Equal(t, result.Question.Example, arg.Example)
+	require.Equal(t, result.Question.Difficulty, arg.Difficulty)
+	require.Equal(t, result.Question.Complexity, arg.Complexity)
+	require.Equal(t, result.Question.CompletionTime, arg.CompletionTime)
+	require.Equal(t, result.Question.QuestionType, arg.QuestionType)
+	require.Equal(t, result.QuestionCategory.QuestionID, result.Question.ID)
+	require.NotZero(t, result.QuestionCategory.ID)
+
+	// delete question category entry
+	// delete question entry (category must already exist)
+}
+
+// test bad question
+// test bad category
+// test bad question category(?)
+

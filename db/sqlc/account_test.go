@@ -137,3 +137,5 @@ func TestListAccounts(t *testing.T) {
 		require.NoError(t, err)
 	}
 }
+
+// test errors

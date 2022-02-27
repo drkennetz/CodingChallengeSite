@@ -44,6 +44,18 @@ func (q *Queries) GetACategoryByID(ctx context.Context, id int64) (Category, err
 	return i, err
 }
 
+const getACategoryIDByName = `-- name: GetACategoryIDByName :one
+SELECT id, category, created_at from categories
+where category = $1 LIMIT 1
+`
+
+func (q *Queries) GetACategoryIDByName(ctx context.Context, category string) (Category, error) {
+	row := q.db.QueryRowContext(ctx, getACategoryIDByName, category)
+	var i Category
+	err := row.Scan(&i.ID, &i.Category, &i.CreatedAt)
+	return i, err
+}
+
 const listCategories = `-- name: ListCategories :many
 SELECT id, category, created_at FROM categories
 ORDER BY id
