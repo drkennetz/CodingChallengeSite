@@ -48,6 +48,6 @@ jobs:
     - name: Run migrations
       run: make migrateup
     - name: Load Data
-      run: make loaddata
+      run: make loadtestdata
     - name: Test
       run: make test

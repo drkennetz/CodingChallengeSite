@@ -24,6 +24,9 @@ migratedown1:
 loaddata:
 	docker exec -i postgres12 psql -f - coding_challenge -t < .\db\migration\load_data.sql
 
+loadtestdata:
+	docker exec -i postgres12 psql -f - coding_challenge -t < ./db/migration/load_data.sql
+
 generate:
 	docker run --rm -v $(makeFileDir):/src -w /src kjconroy/sqlc generate
 
@@ -36,4 +39,4 @@ server:
 mock:
 	mockgen -package mockdb -destination db/mock/store.go github.com/drkennetz/codingchallenge/db/sqlc Store
 	
-.PHONY: postgres createdb dropdb migrateup migrateup1 migratedown migratedown1 loaddata generate test server mock
+.PHONY: postgres createdb dropdb migrateup migrateup1 migratedown migratedown1 loaddata loadtestdata generate test server mock

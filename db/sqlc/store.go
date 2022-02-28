@@ -218,6 +218,12 @@ func (store *SQLStore) CreateQuestionCategoryTx(ctx context.Context, arg CreateQ
 		var err error
 		txName := ctx.Value(txKey)
 
+		// we should first see if a category exists
+		log.Println(txName, "Get Category ID for Question Category Creation")
+		category, err := q.GetACategoryIDByName(ctx, arg.Category)
+		if err != nil {
+			return err
+		}
 		log.Println(txName, "create Question and QuestionCategory")
 		result.Question, err = q.CreateQuestion(ctx, CreateQuestionParams{
 			ChallengeName: arg.ChallengeName,
@@ -231,11 +237,7 @@ func (store *SQLStore) CreateQuestionCategoryTx(ctx context.Context, arg CreateQ
 		if err != nil {
 			return err
 		}
-		log.Println(txName, "Get Category ID for Question Category Creation")
-		category, err := q.GetACategoryIDByName(ctx, arg.Category)
-		if err != nil {
-			return err
-		}
+	
 		log.Println(txName, "Create QuestionCategory")
 		result.QuestionCategory, err = q.CreateQuestionCategory(ctx, CreateQuestionCategoryParams{
 			QuestionID: result.Question.ID,
