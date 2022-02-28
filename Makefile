@@ -25,7 +25,7 @@ loaddata:
 	docker exec -i postgres12 psql -f - coding_challenge -t < .\db\migration\load_data.sql
 
 loadtestdata:
-	docker exec -i postgres12 psql -f - coding_challenge -t < ./db/migration/load_data.sql
+	docker exec -i postgres psql -f - coding_challenge -t < ./db/migration/load_data.sql
 
 generate:
 	docker run --rm -v $(makeFileDir):/src -w /src kjconroy/sqlc generate
