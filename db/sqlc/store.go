@@ -253,7 +253,4 @@ func (store *SQLStore) CreateQuestionCategoryTx(ctx context.Context, arg CreateQ
 
 // insert many question test cases in single transaction
 
-// insert new user_question_score can set the old score to false
-// and then add the new one
-// update question score can set the current question is_most_recent to false
-// and then 
+// insert new user_question_score can set the old score to false and then add the new one

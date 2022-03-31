@@ -28,6 +28,16 @@ func (q *Queries) CreateQuestionCategory(ctx context.Context, arg CreateQuestion
 	return i, err
 }
 
+const deleteQuestionCategory = `-- name: DeleteQuestionCategory :exec
+DELETE from question_categories
+where id = $1
+`
+
+func (q *Queries) DeleteQuestionCategory(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteQuestionCategory, id)
+	return err
+}
+
 const listAllQuestionsByCategory = `-- name: ListAllQuestionsByCategory :many
 SELECT id, challenge_name, description, example, difficulty, complexity, completion_time, question_type, created_at, updated_at from questions
 where id in (

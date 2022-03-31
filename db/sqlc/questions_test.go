@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"testing"
 
@@ -43,5 +44,68 @@ func createRandomQuestion(t *testing.T, i int) Question {
 func TestCreateQuestion(t *testing.T) {
 	q := createRandomQuestion(t, 1)
 	err := testQueries.DeleteQuestion(context.Background(), q.ID)
+	require.NoError(t, err)
+}
+
+func TestGetQuestion(t *testing.T) {
+	q, err := testQueries.GetQuestion(context.Background(), 1)
+	require.NoError(t, err)
+	require.NotEmpty(t, q)
+}
+
+func TestGetQuestionError(t *testing.T) {
+	q, err := testQueries.GetQuestion(context.Background(), 1000000)
+	require.EqualError(t, err, sql.ErrNoRows.Error())
+	require.Empty(t, q)
+}
+
+func TestListAllQuestions(t *testing.T) {
+	arg := ListAllQuestionsParams {
+		Limit: 3,
+		Offset: 0,
+	}
+	qs, err := testQueries.ListAllQuestions(context.Background(), arg)
+	require.Equal(t, 3, len(qs))
+	require.NoError(t, err)
+}
+
+func TestListAllQuestionsByCategory(t *testing.T) {
+	arg := ListAllQuestionsByDifficultyParams {
+		Difficulty: 1,
+		Limit: 2,
+		Offset: 0,
+	}
+	qs, err := testQueries.ListAllQuestionsByDifficulty(context.Background(), arg)
+	require.Equal(t, 2, len(qs))
+	require.NoError(t, err)
+}
+
+func TestListAllQuestionsByType(t *testing.T) {
+	arg := ListAllQuestionsByTypeParams {
+		QuestionType: QuestionTypePractice,
+		Limit: 3,
+		Offset: 0,
+	}
+	qs, err := testQueries.ListAllQuestionsByType(context.Background(), arg)
+	require.NoError(t, err)
+	require.Equal(t, len(qs), 3)
+}
+
+func TestUpdateQuestion(t *testing.T) {
+	q := createRandomQuestion(t, 1)
+	update := UpdateQuestionParams {
+		ID: q.ID,
+		ChallengeName: "test",
+		Description: q.Description,
+		Example: q.Example,
+		Difficulty: q.Difficulty,
+		Complexity: q.Complexity,
+		CompletionTime: q.CompletionTime,
+	} 
+	
+	qs, err := testQueries.UpdateQuestion(context.Background(), update)
+	require.NoError(t, err)
+	require.Equal(t, "test", qs.ChallengeName)
+	err = testQueries.DeleteQuestion(context.Background(), qs.ID)
 	require.NoError(t, err)
 }

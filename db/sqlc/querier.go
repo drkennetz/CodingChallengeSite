@@ -19,6 +19,7 @@ type Querier interface {
 	DeleteCategory(ctx context.Context, id int64) error
 	DeleteOneQuestionTestCase(ctx context.Context, id int64) error
 	DeleteQuestion(ctx context.Context, id int64) error
+	DeleteQuestionCategory(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
 	DeleteUserQuestionScore(ctx context.Context, id int64) error
 	GetACategoryByID(ctx context.Context, id int64) (Category, error)

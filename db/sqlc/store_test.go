@@ -146,7 +146,11 @@ func TestCreateQuestionCategoryTx(t *testing.T) {
 	require.NotZero(t, result.QuestionCategory.ID)
 
 	// delete question category entry
+	err = testQueries.DeleteQuestionCategory(context.Background(), result.QuestionCategory.ID)
+	require.NoError(t, err)
 	// delete question entry (category must already exist)
+	err = testQueries.DeleteQuestion(context.Background(), result.Question.ID)
+	require.NoError(t, err)
 }
 
 // test bad question

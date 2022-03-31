@@ -11,3 +11,7 @@ SELECT * from questions
 where id in (
     SELECT question_id from question_categories where category_id = $1
 ) ORDER BY difficulty ASC;
+
+-- name: DeleteQuestionCategory :exec
+DELETE from question_categories
+where id = $1;
