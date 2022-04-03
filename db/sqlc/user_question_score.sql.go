@@ -12,20 +12,27 @@ const createUserQuestionScore = `-- name: CreateUserQuestionScore :one
 INSERT INTO user_question_score (
     user_id,
     question_id,
-    score
+    score,
+    is_most_recent
 ) VALUES (
-    $1, $2, $3
+    $1, $2, $3, $4
 ) RETURNING id, user_id, question_id, score, is_most_recent, created_at, updated_at
 `
 
 type CreateUserQuestionScoreParams struct {
-	UserID     int64 `json:"user_id"`
-	QuestionID int64 `json:"question_id"`
-	Score      int32 `json:"score"`
+	UserID       int64        `json:"user_id"`
+	QuestionID   int64        `json:"question_id"`
+	Score        int32        `json:"score"`
+	IsMostRecent sql.NullBool `json:"is_most_recent"`
 }
 
 func (q *Queries) CreateUserQuestionScore(ctx context.Context, arg CreateUserQuestionScoreParams) (UserQuestionScore, error) {
-	row := q.db.QueryRowContext(ctx, createUserQuestionScore, arg.UserID, arg.QuestionID, arg.Score)
+	row := q.db.QueryRowContext(ctx, createUserQuestionScore,
+		arg.UserID,
+		arg.QuestionID,
+		arg.Score,
+		arg.IsMostRecent,
+	)
 	var i UserQuestionScore
 	err := row.Scan(
 		&i.ID,

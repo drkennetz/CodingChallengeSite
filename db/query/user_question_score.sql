@@ -2,9 +2,10 @@
 INSERT INTO user_question_score (
     user_id,
     question_id,
-    score
+    score,
+    is_most_recent
 ) VALUES (
-    $1, $2, $3
+    $1, $2, $3, $4
 ) RETURNING *;
 
 -- name: GetLastUserQuestionScore :one
