@@ -69,7 +69,7 @@ func TestListAllQuestions(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestListAllQuestionsByCategory(t *testing.T) {
+func TestListAllQuestionsByDifficulty(t *testing.T) {
 	arg := ListAllQuestionsByDifficultyParams {
 		Difficulty: 1,
 		Limit: 2,
