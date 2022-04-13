@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 )
@@ -153,6 +154,31 @@ func TestCreateQuestionCategoryTx(t *testing.T) {
 	require.NoError(t, err)
 }
 
+
+// userquestionscore test
+func TestNewScoreInsertNewUserQuestionScoreTx(t *testing.T) {
+	store := NewStore(testDB)
+	arg := InsNewUserQuestionScoreParams {
+		UserID: 2,
+		QuestionID: 2,
+		Score: 10,
+		IsMostRecent: sql.NullBool{
+			Bool: true,
+		},
+	}
+	txName := "User Question Score tx"
+	ctx := context.WithValue(context.Background(), txKey, txName)
+	result, err := store.InsertNewUserQuestionScoreTx(ctx, arg)
+	require.NoError(t, err)
+	require.NotZero(t, result.UserQuestionScore.ID)
+	require.Equal(t, result.UserQuestionScore.QuestionID, arg.QuestionID)
+	require.Equal(t, result.UserQuestionScore.UserID, arg.UserID)
+	require.Equal(t, result.UserQuestionScore.Score, arg.Score)
+	require.WithinDuration(t, time.Now(), result.UserQuestionScore.CreatedAt, time.Minute)
+	require.WithinDuration(t, time.Now(), result.UserQuestionScore.UpdatedAt, time.Minute)
+	err = testQueries.DeleteUserQuestionScore(context.Background(), result.UserQuestionScore.ID)
+	require.NoError(t, err)
+}
 // test bad question
 // test bad category
 // test bad question category(?)

@@ -40,8 +40,8 @@ RETURNING *;
 
 -- name: UpdateLatestUserQuestionScore :one
 UPDATE user_question_score
-SET is_most_recent = $3
-where user_id = $1 and question_id = $2
+SET is_most_recent = $2
+where id = $1
 RETURNING *;
 
 -- name: DeleteUserQuestionScore :exec

@@ -223,19 +223,18 @@ func (q *Queries) ListSingleQuestionScoresByUser(ctx context.Context, arg ListSi
 
 const updateLatestUserQuestionScore = `-- name: UpdateLatestUserQuestionScore :one
 UPDATE user_question_score
-SET is_most_recent = $3
-where user_id = $1 and question_id = $2
+SET is_most_recent = $2
+where id = $1
 RETURNING id, user_id, question_id, score, is_most_recent, created_at, updated_at
 `
 
 type UpdateLatestUserQuestionScoreParams struct {
-	UserID       int64        `json:"user_id"`
-	QuestionID   int64        `json:"question_id"`
+	ID           int64        `json:"id"`
 	IsMostRecent sql.NullBool `json:"is_most_recent"`
 }
 
 func (q *Queries) UpdateLatestUserQuestionScore(ctx context.Context, arg UpdateLatestUserQuestionScoreParams) (UserQuestionScore, error) {
-	row := q.db.QueryRowContext(ctx, updateLatestUserQuestionScore, arg.UserID, arg.QuestionID, arg.IsMostRecent)
+	row := q.db.QueryRowContext(ctx, updateLatestUserQuestionScore, arg.ID, arg.IsMostRecent)
 	var i UserQuestionScore
 	err := row.Scan(
 		&i.ID,

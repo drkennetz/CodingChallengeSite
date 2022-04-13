@@ -14,6 +14,7 @@ type Store interface {
 	CreateAccountUserTx(ctx context.Context, arg CreateAccountUserTxParams) (CreateAccountUserTxResult, error)
 	DeleteAccountUserTx(ctx context.Context, arg DeleteAccountUserTxParams) (error)
 	CreateQuestionCategoryTx(ctx context.Context, arg CreateQuestionCategoryTxParams) (CreateQuestionCategoryTxResult, error)
+	InsertNewUserQuestionScoreTx(ctx context.Context, arg InsNewUserQuestionScoreParams) (InsNewUserQuestionScoreResult, error)
 }
 
 // SQLStore provides all functions to execute SQL db queries and transactions
@@ -251,6 +252,55 @@ func (store *SQLStore) CreateQuestionCategoryTx(ctx context.Context, arg CreateQ
 	return result, err
 }
 
-// insert many question test cases in single transaction
-
 // insert new user_question_score can set the old score to false and then add the new one
+// InsNewUserQuestionScoreParams stores all the information needed to insert a new UserQuestionScore
+type InsNewUserQuestionScoreParams struct {
+	UserID int64 `json:"user_id"`
+	QuestionID int64 `json:"question_id"`
+	Score int32 `json:"score"`
+	IsMostRecent sql.NullBool `json:"is_most_recent"`
+}
+
+// InsNewUserQuestionScoreResult stores the result of the transaction
+type InsNewUserQuestionScoreResult struct {
+	UserQuestionScore UserQuestionScore
+}
+
+// InsertNewUserQuestionScoreTx selects the previous latest score, updates the ismostrecent flag to false, and inserts the new score
+func (store *SQLStore) InsertNewUserQuestionScoreTx(ctx context.Context, arg InsNewUserQuestionScoreParams) (InsNewUserQuestionScoreResult, error) {
+	var result InsNewUserQuestionScoreResult
+
+	err := store.execTx(ctx, func(q *Queries) error {
+		var err error
+		txName := ctx.Value(txKey)
+		log.Println(txName, "select previous latest score for user")
+		uqsOld, err := q.GetLastUserQuestionScore(ctx, GetLastUserQuestionScoreParams{
+			UserID: arg.UserID,
+			QuestionID: arg.QuestionID,
+		})
+		if err == sql.ErrNoRows {
+			fmt.Printf("userID %v returned %v scores for questionID %v.. continuing", arg.UserID, 0, arg.QuestionID)
+		} else if err != nil {
+			return err
+		} else {
+			log.Println(uqsOld.ID, " Retrieved")
+			uqsOldUpdate, err := q.UpdateLatestUserQuestionScore(ctx, UpdateLatestUserQuestionScoreParams{
+				ID: uqsOld.ID,
+				IsMostRecent: sql.NullBool{
+					Bool: false,
+				},
+			})
+			if err != nil {
+				return err
+			}
+			log.Println(uqsOldUpdate.ID, "Updated")
+		}
+		result.UserQuestionScore, err = q.CreateUserQuestionScore(ctx, CreateUserQuestionScoreParams(arg))
+		if err != nil {
+			return err
+		}
+		log.Println(result.UserQuestionScore.ID, " successfully created!")
+		return nil			
+	})
+	return result, err
+}
