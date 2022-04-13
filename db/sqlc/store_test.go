@@ -179,6 +179,45 @@ func TestNewScoreInsertNewUserQuestionScoreTx(t *testing.T) {
 	err = testQueries.DeleteUserQuestionScore(context.Background(), result.UserQuestionScore.ID)
 	require.NoError(t, err)
 }
+
+func TestCurrentScoreInsertNewUserQuestionScoreTx(t *testing.T) {
+	store := NewStore(testDB)
+	arg := InsNewUserQuestionScoreParams {
+		UserID: 2,
+		QuestionID: 2,
+		Score: 10,
+		IsMostRecent: sql.NullBool{
+			Bool: true,
+			Valid: true,
+		},
+	}
+	txName := "User Question Score tx"
+	ctx := context.WithValue(context.Background(), txKey, txName)
+	result, err := store.InsertNewUserQuestionScoreTx(ctx, arg)
+	update := InsNewUserQuestionScoreParams {
+		UserID: 2,
+		QuestionID: 2,
+		Score: 20,
+		IsMostRecent: sql.NullBool{
+			Bool: true,
+			Valid: true,
+		},
+	}
+	updateTxName := "User question update score tx"
+	updateCtx := context.WithValue(context.Background(), txKey, updateTxName)
+	updatetx, err := store.InsertNewUserQuestionScoreTx(updateCtx, update)
+	require.NoError(t, err)
+	require.NotEqual(t, updatetx.UserQuestionScore.ID, result.UserQuestionScore.ID)
+	require.Equal(t, updatetx.UserQuestionScore.QuestionID, result.UserQuestionScore.QuestionID)
+	require.Equal(t, updatetx.UserQuestionScore.UserID, result.UserQuestionScore.UserID)
+	require.NotEqual(t, updatetx.UserQuestionScore.Score, result.UserQuestionScore.Score)
+	require.NotEqual(t, updatetx.UserQuestionScore.UpdatedAt, result.UserQuestionScore.UpdatedAt)
+	require.NotEqual(t, updatetx.UserQuestionScore.CreatedAt, result.UserQuestionScore.CreatedAt)
+	err = testQueries.DeleteUserQuestionScore(context.Background(), result.UserQuestionScore.ID)
+	require.NoError(t, err)
+	err = testQueries.DeleteUserQuestionScore(context.Background(), updatetx.UserQuestionScore.ID)
+	require.NoError(t, err)
+}
 // test bad question
 // test bad category
 // test bad question category(?)
