@@ -446,6 +446,21 @@ func (mr *MockStoreMockRecorder) GetUserByUsername(arg0, arg1 interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByUsername", reflect.TypeOf((*MockStore)(nil).GetUserByUsername), arg0, arg1)
 }
 
+// InsertNewUserQuestionScoreTx mocks base method.
+func (m *MockStore) InsertNewUserQuestionScoreTx(arg0 context.Context, arg1 db.InsNewUserQuestionScoreParams) (db.InsNewUserQuestionScoreResult, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InsertNewUserQuestionScoreTx", arg0, arg1)
+	ret0, _ := ret[0].(db.InsNewUserQuestionScoreResult)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// InsertNewUserQuestionScoreTx indicates an expected call of InsertNewUserQuestionScoreTx.
+func (mr *MockStoreMockRecorder) InsertNewUserQuestionScoreTx(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertNewUserQuestionScoreTx", reflect.TypeOf((*MockStore)(nil).InsertNewUserQuestionScoreTx), arg0, arg1)
+}
+
 // ListAccounts mocks base method.
 func (m *MockStore) ListAccounts(arg0 context.Context, arg1 db.ListAccountsParams) ([]db.Account, error) {
 	m.ctrl.T.Helper()
