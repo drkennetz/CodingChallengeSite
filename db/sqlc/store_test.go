@@ -203,6 +203,7 @@ func TestCurrentScoreInsertNewUserQuestionScoreTx(t *testing.T) {
 			Valid: true,
 		},
 	}
+	require.NoError(t, err)
 	updateTxName := "User question update score tx"
 	updateCtx := context.WithValue(context.Background(), txKey, updateTxName)
 	updatetx, err := store.InsertNewUserQuestionScoreTx(updateCtx, update)
