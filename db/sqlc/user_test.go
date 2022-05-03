@@ -20,11 +20,12 @@ func createRandomUser(t *testing.T) User {
 	require.NoError(t, err)
 	require.NotEmpty(t, account)
 	
-
+	hashedPassword, err := util.HashPassword(util.RandomString(6))
+	require.NoError(t, err)
 	arg2 := CreateUserParams {
 		AccountID: account.ID,
 		Username: util.RandomUsername(),
-		Password: util.RandomString(8),
+		Password: hashedPassword,
 		Grade: DevLevel(util.RandomGrade()), 
 	}
 

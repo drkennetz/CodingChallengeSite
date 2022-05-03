@@ -219,7 +219,5 @@ func TestCurrentScoreInsertNewUserQuestionScoreTx(t *testing.T) {
 	err = testQueries.DeleteUserQuestionScore(context.Background(), updatetx.UserQuestionScore.ID)
 	require.NoError(t, err)
 }
-// test bad question
-// test bad category
-// test bad question category(?)
+
 
