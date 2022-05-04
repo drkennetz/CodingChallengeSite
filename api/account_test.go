@@ -99,10 +99,9 @@ func TestGetAccountAPI(t *testing.T) {
 			server.router.ServeHTTP(recorder, req)
 			tc.checkResponse(t, recorder)
 		})
-	}
-	
-	
+	}	
 }
+
 
 func randomAccount() db.Account {
 	return db.Account{
